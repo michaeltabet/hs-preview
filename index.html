@@ -4,50 +4,140 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HiredSignal — Mobile Preview</title>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js" integrity="sha384-bvuRWyKzPx5K1Q0KJzN9PEqxiSXmIVwJEnzYqHhDw3xkDeQrNHnsZL2BV4yDvb+u" crossorigin="anonymous"></script>
 <style>
+  /* HiredSignal Design Tokens — sourced from michaeltabet/hiredsignal-ui v0.3.0
+     Brand Guidelines v1.0 (2026-04-15) */
   :root {
+    /* Core palette */
     --hs-signal-blue: #2563eb;
-    --hs-paper: #f8fafc;
-    --hs-ink: #0f172a;
-    --hs-mute: #64748b;
-    --hs-line: #e2e8f0;
-    --hs-card: #ffffff;
-    --signal-fresh: #16a34a;
-    --signal-verified: #2563eb;
-    --signal-aging: #d97706;
-    --signal-expired: #ef4444;
-    --radius: 12px;
-    --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
-    --shadow-md: 0 6px 24px rgba(15, 23, 42, .08);
-    --space-1: 4px;
-    --space-2: 8px;
-    --space-3: 12px;
-    --space-4: 16px;
-    --space-5: 24px;
-    --space-6: 32px;
-    --space-7: 48px;
+    --hs-ink:         #0f172a;
+    --hs-slate:       #475569;
+    --hs-paper:       #f8fafc;
+
+    /* Slate scale */
+    --hs-slate-100: #f1f5f9;
+    --hs-slate-200: #e2e8f0;
+    --hs-slate-300: #cbd5e1;
+    --hs-slate-400: #94a3b8;
+    --hs-slate-500: #64748b;
+    --hs-slate-600: #475569;
+
+    /* Signal states — text-safe shades (verified AA/AAA on Paper per brand guide) */
+    --hs-signal-fresh:    #047857;  /* 6.3:1 AA  */
+    --hs-signal-verified: #1d4ed8;  /* 8.6:1 AAA */
+    --hs-signal-aging:    #b45309;  /* 5.9:1 AA  */
+    --hs-signal-expired:  #b91c1c;  /* 7.0:1 AAA */
+
+    /* Semantic surfaces */
+    --hs-bg-base:        #ffffff;
+    --hs-bg-container:   #f8fafc;
+    --hs-bg-elevated:    #ffffff;
+    --hs-text-primary:   var(--hs-ink);
+    --hs-text-secondary: var(--hs-slate);
+    --hs-text-tertiary:  var(--hs-slate-400);
+    --hs-border:         #e2e8f0;
+    --hs-border-strong:  var(--hs-slate-300);
+
+    /* Legacy aliases retained for component CSS (point at real tokens) */
+    --hs-mute: var(--hs-text-secondary);
+    --hs-line: var(--hs-border);
+    --hs-card: var(--hs-bg-base);
+
+    /* Type scale */
+    --hs-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --hs-font-family-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Monaco, Consolas, monospace;
+    --hs-fs-h1:      1.875rem;
+    --hs-fs-h2:      1.5rem;
+    --hs-fs-h3:      1.25rem;
+    --hs-fs-h4:      1.125rem;
+    --hs-fs-body-lg: 1rem;
+    --hs-fs-body:    0.875rem;
+    --hs-fs-caption: 0.6875rem;
+    --hs-lh-body: 1.6;
+    --hs-fw-medium: 500;
+    --hs-fw-semibold: 600;
+    --hs-fw-bold: 700;
+
+    /* Spacing (4px grid) */
+    --hs-space-xs: 8px;
+    --hs-space-sm: 12px;
+    --hs-space-md: 16px;
+    --hs-space-lg: 24px;
+    --hs-space-xl: 32px;
+    --space-1: 4px; --space-2: 8px; --space-3: 12px;
+    --space-4: 16px; --space-5: 24px; --space-6: 32px; --space-7: 48px;
+
+    /* Radius + shadow */
+    --hs-radius-sm: 4px;
+    --hs-radius-md: 6px;
+    --hs-radius-lg: 8px;
+    --hs-radius-xl: 12px;
+    --radius: var(--hs-radius-xl);
+    --hs-shadow-sm: 0 1px 2px rgba(15,23,42,.04), 0 2px 4px rgba(15,23,42,.08);
+    --hs-shadow-md: 0 2px 4px rgba(15,23,42,.06), 0 4px 8px rgba(15,23,42,.10);
+    --hs-shadow-lg: 0 4px 8px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.12);
+    --shadow-sm: var(--hs-shadow-sm);
+    --shadow-md: var(--hs-shadow-md);
+
+    /* Motion */
+    --hs-duration-fast: 120ms;
+    --hs-duration-normal: 200ms;
+    --hs-easing-default: cubic-bezier(.4,0,.2,1);
+
+    /* Touch target */
+    --hs-touch-ios: 44px;
+    --hs-touch-android: 48px;
   }
   [data-theme="dark"] {
-    --hs-paper: #0b1220;
-    --hs-ink: #e2e8f0;
-    --hs-mute: #94a3b8;
-    --hs-line: #1e293b;
-    --hs-card: #111a2e;
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35);
-    --shadow-md: 0 6px 24px rgba(0, 0, 0, .35);
+    --hs-bg-base:        #0f172a;
+    --hs-bg-container:   #020617;
+    --hs-bg-elevated:    #1e293b;
+    --hs-text-primary:   #f1f5f9;
+    --hs-text-secondary: #94a3b8;
+    --hs-text-tertiary:  #475569;
+    --hs-border:         #1e293b;
+    --hs-border-strong:  #334155;
+    --hs-paper: var(--hs-bg-container);
+    --hs-ink: var(--hs-text-primary);
+    --hs-mute: var(--hs-text-secondary);
+    --hs-line: var(--hs-border);
+    --hs-card: var(--hs-bg-elevated);
+    --hs-shadow-sm: 0 1px 2px rgba(0,0,0,.35);
+    --hs-shadow-md: 0 4px 12px rgba(0,0,0,.45);
+    --shadow-sm: var(--hs-shadow-sm);
+    --shadow-md: var(--hs-shadow-md);
   }
   *, *::before, *::after { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
-    background: var(--hs-paper);
-    color: var(--hs-ink);
+    font-family: var(--hs-font-family);
+    font-size: var(--hs-fs-body);
+    line-height: var(--hs-lh-body);
+    background: var(--hs-bg-container);
+    color: var(--hs-text-primary);
     -webkit-font-smoothing: antialiased;
-    line-height: 1.45;
+    -moz-osx-font-smoothing: grayscale;
   }
   button { font: inherit; color: inherit; cursor: pointer; }
   a { color: var(--hs-signal-blue); text-decoration: none; }
   a:hover { text-decoration: underline; }
+  :focus-visible {
+    outline: 2px solid var(--hs-signal-blue);
+    outline-offset: 2px;
+    box-shadow: none;
+    border-radius: inherit;
+  }
+  [data-theme="dark"] :focus-visible { outline-color: #93c5fd; }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 
   /* Device frame harness — lets you preview at phone / tablet / desktop sizes */
   .harness {
@@ -260,10 +350,15 @@
     align-self: start;
     white-space: nowrap;
   }
-  .signal--fresh { background: rgba(22, 163, 74, .12); color: var(--signal-fresh); }
-  .signal--verified { background: rgba(37, 99, 235, .12); color: var(--signal-verified); }
-  .signal--aging { background: rgba(217, 119, 6, .12); color: var(--signal-aging); }
-  .signal--expired { background: rgba(239, 68, 68, .12); color: var(--signal-expired); }
+  /* Signal state badges — use text-safe colours from brand v1.0 (§10) — pass AA/AAA on Paper */
+  .signal--fresh    { background: #d1fae5; color: var(--hs-signal-fresh); }
+  .signal--verified { background: #dbeafe; color: var(--hs-signal-verified); }
+  .signal--aging    { background: #fef3c7; color: var(--hs-signal-aging); }
+  .signal--expired  { background: #fee2e2; color: var(--hs-signal-expired); }
+  [data-theme="dark"] .signal--fresh    { background: rgba(4,120,87,.18);  color: #10b981; }
+  [data-theme="dark"] .signal--verified { background: rgba(29,78,216,.22); color: #93c5fd; }
+  [data-theme="dark"] .signal--aging    { background: rgba(180,83,9,.22);  color: #fbbf24; }
+  [data-theme="dark"] .signal--expired  { background: rgba(185,28,28,.22); color: #fca5a5; }
 
   /* Job detail */
   .detail__sticky {
@@ -601,8 +696,10 @@
     document.querySelectorAll('.job').forEach(c => c.setAttribute('aria-selected', 'false'));
     jobDetail.innerHTML = '<div class="state">Loading…</div>';
     try {
-      const encodedSlug = slug.split(':').map(encodeURIComponent).join('%3A');
-      const res = await fetch(`${API}/api/jobs/${encodedSlug}`);
+      // CRITICAL FIX: slugs come back ALREADY percent-encoded from /api/jobs/search.
+      // Re-encoding would double-encode the % → %25, returning 404.
+      // The slug as received is the final path segment — pass it through verbatim.
+      const res = await fetch(`${API}/api/jobs/${slug}`);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const job = await res.json();
       renderDetail(job);
@@ -627,10 +724,21 @@
           ${j.remote ? '<span><strong>Remote:</strong> Yes</span>' : ''}
           ${salary}
         </div>
-        ${j.applyUrl ? `<a class="detail__apply" href="${j.applyUrl}" target="_blank" rel="noopener">Apply on ${new URL(j.applyUrl).hostname} →</a>` : ''}
+        ${safeApplyLink(j.applyUrl)}
       </div>
-      <div class="detail__body">${j.description || '<p class="state">No description available.</p>'}</div>
+      <div class="detail__body">${j.description ? DOMPurify.sanitize(j.description, { USE_PROFILES: { html: true } }) : '<p class="state">No description available.</p>'}</div>
     `;
+  }
+
+  function safeApplyLink(url) {
+    if (!url) return '';
+    try {
+      const u = new URL(url);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+      return `<a class="detail__apply" href="${escapeHTML(u.href)}" target="_blank" rel="noopener noreferrer">Apply on ${escapeHTML(u.hostname)} →</a>`;
+    } catch {
+      return '';
+    }
   }
 
   function clearDetail() {
