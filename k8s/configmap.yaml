@@ -1,0 +1,701 @@
+apiVersion: v1
+data:
+  index.html: |
+    <!doctype html>
+    <html lang="en" data-theme="light">
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>HiredSignal — Mobile Preview</title>
+    <style>
+      :root {
+        --hs-signal-blue: #2563eb;
+        --hs-paper: #f8fafc;
+        --hs-ink: #0f172a;
+        --hs-mute: #64748b;
+        --hs-line: #e2e8f0;
+        --hs-card: #ffffff;
+        --signal-fresh: #16a34a;
+        --signal-verified: #2563eb;
+        --signal-aging: #d97706;
+        --signal-expired: #ef4444;
+        --radius: 12px;
+        --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
+        --shadow-md: 0 6px 24px rgba(15, 23, 42, .08);
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 24px;
+        --space-6: 32px;
+        --space-7: 48px;
+      }
+      [data-theme="dark"] {
+        --hs-paper: #0b1220;
+        --hs-ink: #e2e8f0;
+        --hs-mute: #94a3b8;
+        --hs-line: #1e293b;
+        --hs-card: #111a2e;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35);
+        --shadow-md: 0 6px 24px rgba(0, 0, 0, .35);
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+        background: var(--hs-paper);
+        color: var(--hs-ink);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.45;
+      }
+      button { font: inherit; color: inherit; cursor: pointer; }
+      a { color: var(--hs-signal-blue); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      /* Device frame harness — lets you preview at phone / tablet / desktop sizes */
+      .harness {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 240px 1fr;
+      }
+      .harness__sidebar {
+        background: var(--hs-card);
+        border-right: 1px solid var(--hs-line);
+        padding: var(--space-5);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+      }
+      .harness__brand {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-weight: 700;
+        font-size: 15px;
+        margin-bottom: var(--space-4);
+      }
+      .harness__dot { width: 14px; height: 14px; border-radius: 50%; background: var(--hs-signal-blue); }
+      .harness__label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--hs-mute); margin-top: var(--space-4); }
+      .harness__btn {
+        background: transparent;
+        border: 1px solid var(--hs-line);
+        border-radius: 8px;
+        padding: 10px 12px;
+        text-align: left;
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .harness__btn:hover { background: var(--hs-paper); }
+      .harness__btn--active { border-color: var(--hs-signal-blue); background: rgba(37, 99, 235, .08); color: var(--hs-signal-blue); font-weight: 600; }
+      .harness__stage {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: var(--space-6) var(--space-4);
+        overflow: auto;
+        background:
+          radial-gradient(1200px 600px at 50% -100px, rgba(37, 99, 235, .08), transparent),
+          var(--hs-paper);
+      }
+      .device {
+        background: var(--hs-card);
+        border: 1px solid var(--hs-line);
+        border-radius: 28px;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        transition: width .25s ease, height .25s ease;
+        position: relative;
+      }
+      .device--iphone   { width: 390px; height: 844px; }   /* iPhone 15 Pro */
+      .device--ipad     { width: 1024px; height: 768px; }  /* iPad landscape */
+      .device--android  { width: 412px; height: 915px; }   /* Pixel 7 */
+      .device--tablet   { width: 1200px; height: 800px; }  /* Android tablet landscape */
+      .device--desktop  { width: 100%; height: calc(100vh - 96px); border-radius: 16px; }
+
+      .device__notch {
+        position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+        width: 120px; height: 26px; background: #000; border-radius: 14px; z-index: 50;
+        opacity: .85;
+      }
+      .device--ipad .device__notch,
+      .device--tablet .device__notch,
+      .device--desktop .device__notch { display: none; }
+
+      /* App chrome */
+      .app {
+        height: 100%;
+        width: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        background: var(--hs-paper);
+        overflow: hidden;
+      }
+      .app__topbar {
+        padding: var(--space-3) var(--space-4);
+        padding-top: max(var(--space-4), env(safe-area-inset-top));
+        background: var(--hs-card);
+        border-bottom: 1px solid var(--hs-line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-3);
+      }
+      .app__title { font-weight: 700; font-size: 17px; display: flex; align-items: center; gap: var(--space-2); }
+      .app__title .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--hs-signal-blue); display: inline-block; }
+      .app__avatar {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--hs-signal-blue), #7c3aed);
+        color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700;
+      }
+
+      .app__content { overflow: auto; }
+      .app__tabbar {
+        border-top: 1px solid var(--hs-line);
+        background: var(--hs-card);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .app__tab {
+        background: none;
+        border: none;
+        padding: 10px 4px 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: var(--hs-mute);
+        border-top: 2px solid transparent;
+      }
+      .app__tab[aria-selected="true"] { color: var(--hs-signal-blue); border-top-color: var(--hs-signal-blue); font-weight: 600; }
+      .app__tab svg { width: 22px; height: 22px; }
+
+      /* Tablet / desktop two-pane layout */
+      .device--ipad .app,
+      .device--tablet .app,
+      .device--desktop .app { grid-template-rows: auto 1fr; }
+      .device--ipad .app__tabbar,
+      .device--tablet .app__tabbar,
+      .device--desktop .app__tabbar { display: none; }
+      .device--ipad .app__content,
+      .device--tablet .app__content,
+      .device--desktop .app__content {
+        display: grid;
+        grid-template-columns: 220px 360px 1fr;
+        overflow: hidden;
+      }
+      .pane-sidebar {
+        display: none;
+        border-right: 1px solid var(--hs-line);
+        background: var(--hs-card);
+        padding: var(--space-4);
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+      .device--ipad .pane-sidebar,
+      .device--tablet .pane-sidebar,
+      .device--desktop .pane-sidebar { display: flex; }
+      .pane-sidebar__item {
+        background: none; border: none; text-align: left;
+        padding: 10px 12px; border-radius: 8px; font-size: 14px; color: var(--hs-ink);
+        display: flex; align-items: center; gap: var(--space-3);
+      }
+      .pane-sidebar__item[aria-selected="true"] { background: rgba(37, 99, 235, .1); color: var(--hs-signal-blue); font-weight: 600; }
+      .pane-sidebar__item:hover { background: var(--hs-paper); }
+      .pane-list, .pane-detail { overflow: auto; }
+      .pane-list { border-right: 1px solid var(--hs-line); background: var(--hs-card); }
+      .pane-detail { padding: var(--space-5); background: var(--hs-paper); }
+
+      /* Tab views */
+      .view { display: none; height: 100%; }
+      .view[data-active="true"] { display: block; }
+
+      /* Jobs tab */
+      .jobs__search {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--hs-line);
+        background: var(--hs-card);
+        position: sticky; top: 0; z-index: 10;
+      }
+      .jobs__field {
+        border: 1px solid var(--hs-line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: var(--hs-paper);
+        font-size: 14px;
+        color: var(--hs-ink);
+      }
+      .jobs__field:focus { outline: 2px solid var(--hs-signal-blue); outline-offset: 1px; border-color: var(--hs-signal-blue); }
+      .jobs__submit {
+        background: var(--hs-signal-blue); color: #fff; border: none;
+        padding: 0 16px; border-radius: 10px; font-weight: 600; font-size: 14px;
+      }
+      .jobs__list { padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
+      .job {
+        background: var(--hs-card);
+        border: 1px solid var(--hs-line);
+        border-radius: var(--radius);
+        padding: var(--space-3) var(--space-4);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--space-2);
+        cursor: pointer;
+        transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+      }
+      .job:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); border-color: var(--hs-signal-blue); }
+      .job[aria-selected="true"] { border-color: var(--hs-signal-blue); box-shadow: 0 0 0 2px rgba(37, 99, 235, .15); }
+      .job__title { font-weight: 600; font-size: 15px; line-height: 1.3; }
+      .job__meta { font-size: 13px; color: var(--hs-mute); margin-top: 2px; }
+      .job__company { color: var(--hs-ink); font-weight: 500; }
+      .signal {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 4px 8px;
+        border-radius: 999px;
+        align-self: start;
+        white-space: nowrap;
+      }
+      .signal--fresh { background: rgba(22, 163, 74, .12); color: var(--signal-fresh); }
+      .signal--verified { background: rgba(37, 99, 235, .12); color: var(--signal-verified); }
+      .signal--aging { background: rgba(217, 119, 6, .12); color: var(--signal-aging); }
+      .signal--expired { background: rgba(239, 68, 68, .12); color: var(--signal-expired); }
+
+      /* Job detail */
+      .detail__sticky {
+        position: sticky; top: 0; background: var(--hs-paper); z-index: 5; padding-bottom: var(--space-3);
+        border-bottom: 1px solid var(--hs-line); margin-bottom: var(--space-4);
+      }
+      .detail__back { background: none; border: none; color: var(--hs-signal-blue); font-weight: 600; font-size: 14px; padding: 0; margin-bottom: var(--space-3); display: inline-flex; align-items: center; gap: 4px; }
+      .detail__title { font-size: 22px; line-height: 1.2; margin: 0 0 var(--space-2); font-weight: 700; }
+      .detail__company { font-size: 15px; color: var(--hs-mute); margin: 0 0 var(--space-3); }
+      .detail__row { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); font-size: 13px; color: var(--hs-mute); margin-bottom: var(--space-3); }
+      .detail__row strong { color: var(--hs-ink); font-weight: 600; }
+      .detail__apply {
+        display: inline-flex; gap: var(--space-2); align-items: center;
+        background: var(--hs-signal-blue); color: #fff; border: none;
+        padding: 12px 20px; border-radius: 12px;
+        font-weight: 600; font-size: 15px;
+        text-decoration: none;
+      }
+      .detail__apply:hover { text-decoration: none; opacity: .9; }
+      .detail__body { font-size: 14px; line-height: 1.6; }
+      .detail__body p { margin: 0 0 var(--space-3); }
+      .detail__placeholder {
+        padding: var(--space-7); text-align: center; color: var(--hs-mute);
+      }
+
+      /* Loading + error states */
+      .state {
+        padding: var(--space-5);
+        text-align: center;
+        color: var(--hs-mute);
+        font-size: 14px;
+      }
+      .state--error { color: var(--signal-expired); }
+      .skeleton {
+        height: 64px; background: linear-gradient(90deg, var(--hs-line) 0%, var(--hs-paper) 50%, var(--hs-line) 100%);
+        background-size: 200% 100%; animation: shimmer 1.4s linear infinite;
+        border-radius: var(--radius); margin: var(--space-2);
+      }
+      @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+      /* Chat tab */
+      .chat { display: flex; flex-direction: column; height: 100%; }
+      .chat__header { padding: var(--space-4); border-bottom: 1px solid var(--hs-line); background: var(--hs-card); }
+      .chat__title { font-size: 20px; font-weight: 700; margin: 0 0 var(--space-2); }
+      .chat__models { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+      .chat__model {
+        background: var(--hs-paper); border: 1px solid var(--hs-line);
+        border-radius: 999px; padding: 6px 12px; font-size: 12px;
+      }
+      .chat__model[aria-pressed="true"] { background: rgba(37, 99, 235, .1); color: var(--hs-signal-blue); border-color: var(--hs-signal-blue); }
+      .chat__body { flex: 1; padding: var(--space-5); overflow: auto; }
+      .chat__suggestions { display: grid; gap: var(--space-2); grid-template-columns: 1fr; }
+      .chat__suggestion {
+        text-align: left; background: var(--hs-card); border: 1px solid var(--hs-line);
+        border-radius: var(--radius); padding: var(--space-3) var(--space-4); font-size: 14px;
+      }
+      .chat__suggestion:hover { border-color: var(--hs-signal-blue); }
+      .chat__composer { padding: var(--space-3) var(--space-4); border-top: 1px solid var(--hs-line); background: var(--hs-card); display: flex; gap: var(--space-2); }
+      .chat__input { flex: 1; padding: 12px 14px; border: 1px solid var(--hs-line); border-radius: 12px; background: var(--hs-paper); font: inherit; color: var(--hs-ink); }
+      .chat__send { background: var(--hs-signal-blue); color: #fff; border: none; padding: 0 16px; border-radius: 12px; font-weight: 600; }
+      .chat__placeholder-note { font-size: 12px; color: var(--hs-mute); margin-top: var(--space-2); }
+
+      /* Tracker tab */
+      .tracker { padding: var(--space-4); height: 100%; overflow: auto; }
+      .tracker__gate { text-align: center; padding: var(--space-7) var(--space-4); }
+      .tracker__gate h2 { font-size: 22px; margin: 0 0 var(--space-3); }
+      .tracker__gate p { color: var(--hs-mute); margin: 0 0 var(--space-4); }
+      .tracker__signin {
+        background: var(--hs-signal-blue); color: #fff; border: none;
+        padding: 12px 20px; border-radius: 12px; font-weight: 600;
+      }
+      .tracker__columns {
+        display: grid; gap: var(--space-3); grid-auto-flow: column;
+        grid-auto-columns: 240px; overflow-x: auto;
+        height: calc(100% - 60px);
+      }
+      .tracker__col {
+        background: var(--hs-card); border: 1px solid var(--hs-line); border-radius: var(--radius);
+        padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2);
+        min-height: 200px;
+      }
+      .tracker__col h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--hs-mute); margin: 0 0 var(--space-2); font-weight: 700; display: flex; justify-content: space-between; }
+      .tracker__count { background: var(--hs-paper); padding: 2px 8px; border-radius: 999px; font-size: 11px; color: var(--hs-ink); }
+      .tracker__empty { font-size: 13px; color: var(--hs-mute); padding: var(--space-3); text-align: center; border: 1px dashed var(--hs-line); border-radius: 8px; }
+      .tracker__toolbar { display: flex; justify-content: space-between; margin-bottom: var(--space-3); align-items: center; }
+      .tracker__toolbar h2 { margin: 0; font-size: 20px; }
+
+      /* Responsive — narrow phone preview shrinks search to 1 col */
+      @media (max-width: 480px) {
+        .harness { grid-template-columns: 1fr; }
+        .harness__sidebar { display: none; }
+        .device { width: 100% !important; height: 100vh !important; border-radius: 0; border: none; }
+        .device__notch { display: none; }
+      }
+    </style>
+    </head>
+    <body>
+    <div class="harness">
+      <aside class="harness__sidebar" aria-label="Preview controls">
+        <div class="harness__brand"><span class="harness__dot"></span> HiredSignal Preview</div>
+        <div class="harness__label">Device</div>
+        <button class="harness__btn harness__btn--active" data-device="iphone">iPhone 15 Pro <span>390×844</span></button>
+        <button class="harness__btn" data-device="android">Pixel 7 <span>412×915</span></button>
+        <button class="harness__btn" data-device="ipad">iPad landscape <span>1024×768</span></button>
+        <button class="harness__btn" data-device="tablet">Android tablet <span>1200×800</span></button>
+        <button class="harness__btn" data-device="desktop">Desktop (max)</button>
+        <div class="harness__label">Theme</div>
+        <button class="harness__btn" data-theme-toggle>Toggle dark mode</button>
+        <div class="harness__label">Notes</div>
+        <div style="font-size: 12px; color: var(--hs-mute); line-height: 1.5;">
+          Live preview against <strong>https://hiredsignal.com/api/jobs/search</strong>.
+          Real jobs. Real API. Click cards to see detail.
+        </div>
+      </aside>
+
+      <main class="harness__stage">
+        <div class="device device--iphone" id="device">
+          <div class="device__notch" aria-hidden="true"></div>
+          <div class="app">
+            <header class="app__topbar">
+              <div class="app__title"><span class="dot"></span><span id="tabTitle">Jobs</span></div>
+              <div class="app__avatar" aria-label="Profile">M</div>
+            </header>
+
+            <div class="app__content">
+              <nav class="pane-sidebar" aria-label="Sections">
+                <button class="pane-sidebar__item" aria-selected="true" data-tab="jobs">Jobs</button>
+                <button class="pane-sidebar__item" data-tab="chat">Chat</button>
+                <button class="pane-sidebar__item" data-tab="tracker">Tracker</button>
+                <button class="pane-sidebar__item" data-tab="profile">Profile</button>
+              </nav>
+
+              <!-- Jobs tab -->
+              <section class="view" data-tab="jobs" data-active="true" style="display: contents;">
+                <div class="pane-list" id="jobsListPane">
+                  <form class="jobs__search" id="jobsForm" autocomplete="off">
+                    <input class="jobs__field" id="qField" type="search" placeholder="Job title, keyword, or company" aria-label="Search">
+                    <input class="jobs__field" id="locField" type="search" placeholder="Location" aria-label="Location">
+                    <button class="jobs__submit" type="submit" aria-label="Search">Search</button>
+                  </form>
+                  <div class="jobs__list" id="jobsList" role="list">
+                    <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+                  </div>
+                </div>
+                <div class="pane-detail" id="jobDetail">
+                  <div class="detail__placeholder">Select a job to see details</div>
+                </div>
+              </section>
+
+              <!-- Chat tab -->
+              <section class="view" data-tab="chat" style="display: none;">
+                <div class="chat" style="grid-column: 1 / -1;">
+                  <header class="chat__header">
+                    <h2 class="chat__title">How can I help with your job hunt?</h2>
+                    <div class="chat__models" role="radiogroup" aria-label="Model">
+                      <button class="chat__model" aria-pressed="true">GPT-OSS 120B</button>
+                      <button class="chat__model" aria-pressed="false">GPT-OSS 20B</button>
+                      <button class="chat__model" aria-pressed="false">Llama 3.3 70B</button>
+                      <button class="chat__model" aria-pressed="false">Llama 3.1 8B</button>
+                    </div>
+                  </header>
+                  <div class="chat__body">
+                    <div class="chat__suggestions">
+                      <button class="chat__suggestion">Tailor my CV for a specific role</button>
+                      <button class="chat__suggestion">Draft a cover letter that doesn't sound generic</button>
+                      <button class="chat__suggestion">Prep for behavioural interviews using the STAR method</button>
+                      <button class="chat__suggestion">Evaluate a job offer beyond just salary</button>
+                    </div>
+                    <p class="chat__placeholder-note">Chat send is stubbed in this preview — the chat API will land in v1.1. UI shell matches the production app.</p>
+                  </div>
+                  <form class="chat__composer" onsubmit="event.preventDefault();">
+                    <input class="chat__input" placeholder="Ask anything about your job hunt..." aria-label="Message">
+                    <button class="chat__send" type="submit">Send</button>
+                  </form>
+                </div>
+              </section>
+
+              <!-- Tracker tab -->
+              <section class="view" data-tab="tracker" style="display: none;">
+                <div class="tracker" style="grid-column: 1 / -1;">
+                  <div class="tracker__toolbar">
+                    <h2>Application tracker</h2>
+                    <button class="tracker__signin" id="signinBtn">Sign in</button>
+                  </div>
+                  <div class="tracker__gate" id="trackerGate">
+                    <h2>Sign in to track your applications</h2>
+                    <p>Authenticated via Keycloak OIDC PKCE. Sign in with Google, Apple, or email — same account as the web site.</p>
+                  </div>
+                  <div class="tracker__columns" id="trackerBoard" style="display: none;">
+                    <!-- Filled by JS when signed in -->
+                  </div>
+                </div>
+              </section>
+
+              <!-- Profile tab -->
+              <section class="view" data-tab="profile" style="display: none;">
+                <div style="grid-column: 1 / -1; padding: var(--space-5);">
+                  <h2 style="margin: 0 0 var(--space-3);">Profile</h2>
+                  <p style="color: var(--hs-mute); margin: 0 0 var(--space-4);">Sign in to save jobs, sync your tracker across devices, and get freshness alerts.</p>
+                  <button class="tracker__signin" onclick="alert('Will open Keycloak OIDC flow on real device via AppAuth (iOS) / Credential Manager (Android).')">Sign in with HiredSignal</button>
+                </div>
+              </section>
+            </div>
+
+            <nav class="app__tabbar" aria-label="Primary">
+              <button class="app__tab" aria-selected="true" data-tab="jobs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                Jobs
+              </button>
+              <button class="app__tab" aria-selected="false" data-tab="chat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Chat
+              </button>
+              <button class="app__tab" aria-selected="false" data-tab="tracker">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="12" rx="1"/></svg>
+                Tracker
+              </button>
+              <button class="app__tab" aria-selected="false" data-tab="profile">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+                Profile
+              </button>
+            </nav>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const API = 'https://hiredsignal.com';
+      const state = { tab: 'jobs', selectedSlug: null, jobs: [], signedIn: false };
+
+      // Device switching
+      document.querySelectorAll('[data-device]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-device]').forEach(b => b.classList.remove('harness__btn--active'));
+          btn.classList.add('harness__btn--active');
+          const dev = btn.dataset.device;
+          const device = document.getElementById('device');
+          device.className = 'device device--' + dev;
+        });
+      });
+
+      // Theme
+      document.querySelector('[data-theme-toggle]').addEventListener('click', () => {
+        const cur = document.documentElement.dataset.theme;
+        document.documentElement.dataset.theme = cur === 'light' ? 'dark' : 'light';
+      });
+
+      // Tab switching (both bottom tab bar and sidebar)
+      function setTab(tab) {
+        state.tab = tab;
+        document.querySelectorAll('.app__tab').forEach(t => {
+          t.setAttribute('aria-selected', t.dataset.tab === tab ? 'true' : 'false');
+        });
+        document.querySelectorAll('.pane-sidebar__item').forEach(t => {
+          t.setAttribute('aria-selected', t.dataset.tab === tab ? 'true' : 'false');
+        });
+        document.querySelectorAll('.view').forEach(v => {
+          const match = v.dataset.tab === tab;
+          v.dataset.active = match;
+          v.style.display = match ? (tab === 'jobs' ? 'contents' : 'block') : 'none';
+        });
+        document.getElementById('tabTitle').textContent = tab.charAt(0).toUpperCase() + tab.slice(1);
+      }
+      document.querySelectorAll('[data-tab]').forEach(el => {
+        el.addEventListener('click', () => setTab(el.dataset.tab));
+      });
+
+      // Jobs search
+      const qField = document.getElementById('qField');
+      const locField = document.getElementById('locField');
+      const jobsForm = document.getElementById('jobsForm');
+      const jobsList = document.getElementById('jobsList');
+      const jobDetail = document.getElementById('jobDetail');
+
+      async function loadJobs(q = '', location = '') {
+        jobsList.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+        const params = new URLSearchParams();
+        if (q) params.set('q', q);
+        if (location) params.set('location', location);
+        params.set('limit', '25');
+        try {
+          const res = await fetch(`${API}/api/jobs/search?${params}`);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const data = await res.json();
+          state.jobs = data.jobs || [];
+          renderJobs(state.jobs);
+        } catch (err) {
+          jobsList.innerHTML = `<div class="state state--error">Failed to load jobs: ${err.message}</div>`;
+        }
+      }
+
+      function fmtDate(iso) {
+        try {
+          const d = new Date(iso);
+          const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+          if (days < 1) return 'today';
+          if (days < 7) return days + 'd ago';
+          if (days < 30) return Math.floor(days / 7) + 'w ago';
+          if (days < 365) return Math.floor(days / 30) + 'mo ago';
+          return Math.floor(days / 365) + 'y ago';
+        } catch { return ''; }
+      }
+
+      function renderJobs(jobs) {
+        if (!jobs.length) {
+          jobsList.innerHTML = '<div class="state">No jobs match — try different keywords.</div>';
+          return;
+        }
+        jobsList.innerHTML = '';
+        jobs.forEach(j => {
+          const card = document.createElement('div');
+          card.className = 'job';
+          card.setAttribute('role', 'listitem');
+          card.setAttribute('aria-selected', j.slug === state.selectedSlug ? 'true' : 'false');
+          card.innerHTML = `
+            <div>
+              <div class="job__title">${escapeHTML(j.title)}</div>
+              <div class="job__meta">
+                <span class="job__company">${escapeHTML(j.company)}</span>
+                &middot; ${escapeHTML(j.location || 'Remote')}
+                ${j.remote ? '&middot; Remote' : ''}
+                &middot; ${fmtDate(j.postedAt)}
+              </div>
+            </div>
+            <span class="signal signal--${j.signal}">${j.signal}</span>
+          `;
+          card.addEventListener('click', () => loadDetail(j.slug));
+          jobsList.appendChild(card);
+        });
+      }
+
+      async function loadDetail(slug) {
+        state.selectedSlug = slug;
+        document.querySelectorAll('.job').forEach(c => c.setAttribute('aria-selected', 'false'));
+        jobDetail.innerHTML = '<div class="state">Loading…</div>';
+        try {
+          const encodedSlug = slug.split(':').map(encodeURIComponent).join('%3A');
+          const res = await fetch(`${API}/api/jobs/${encodedSlug}`);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const job = await res.json();
+          renderDetail(job);
+        } catch (err) {
+          jobDetail.innerHTML = `<div class="state state--error">Failed to load detail: ${err.message}</div>`;
+        }
+      }
+
+      function renderDetail(j) {
+        const salary = (j.salaryMin || j.salaryMax)
+          ? `<span><strong>Salary:</strong> ${j.salaryMin ?? '?'}–${j.salaryMax ?? '?'} ${j.salaryCurrency ?? ''}</span>`
+          : '';
+        jobDetail.innerHTML = `
+          <div class="detail__sticky">
+            <button class="detail__back" onclick="clearDetail()">← Back to jobs</button>
+            <h1 class="detail__title">${escapeHTML(j.title)}</h1>
+            <p class="detail__company">${escapeHTML(j.company)} &middot; ${escapeHTML(j.location || '')}</p>
+            <div class="detail__row">
+              <span class="signal signal--${j.signal}">${j.signal}</span>
+              <span><strong>Posted:</strong> ${fmtDate(j.postedAt)}</span>
+              ${j.employmentType ? `<span><strong>Type:</strong> ${escapeHTML(j.employmentType)}</span>` : ''}
+              ${j.remote ? '<span><strong>Remote:</strong> Yes</span>' : ''}
+              ${salary}
+            </div>
+            ${j.applyUrl ? `<a class="detail__apply" href="${j.applyUrl}" target="_blank" rel="noopener">Apply on ${new URL(j.applyUrl).hostname} →</a>` : ''}
+          </div>
+          <div class="detail__body">${j.description || '<p class="state">No description available.</p>'}</div>
+        `;
+      }
+
+      function clearDetail() {
+        state.selectedSlug = null;
+        jobDetail.innerHTML = '<div class="detail__placeholder">Select a job to see details</div>';
+        document.querySelectorAll('.job').forEach(c => c.setAttribute('aria-selected', 'false'));
+      }
+
+      function escapeHTML(s) {
+        return (s ?? '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+      }
+
+      jobsForm.addEventListener('submit', e => {
+        e.preventDefault();
+        loadJobs(qField.value.trim(), locField.value.trim());
+      });
+
+      // Tracker sign-in stub
+      document.getElementById('signinBtn').addEventListener('click', () => {
+        state.signedIn = !state.signedIn;
+        const gate = document.getElementById('trackerGate');
+        const board = document.getElementById('trackerBoard');
+        const btn = document.getElementById('signinBtn');
+        if (state.signedIn) {
+          btn.textContent = 'Sign out';
+          gate.style.display = 'none';
+          board.style.display = 'grid';
+          renderBoard();
+        } else {
+          btn.textContent = 'Sign in';
+          gate.style.display = 'block';
+          board.style.display = 'none';
+        }
+      });
+
+      function renderBoard() {
+        const stages = [
+          { id: 'saved',     label: 'Saved',        sample: ['Senior Engineer @ Stripe', 'Design Lead @ Linear'] },
+          { id: 'applied',   label: 'Applied',      sample: ['Backend Eng @ Cloudflare'] },
+          { id: 'screen',    label: 'Phone screen', sample: ['Platform Eng @ Anthropic'] },
+          { id: 'interview', label: 'Interview',    sample: [] },
+          { id: 'offer',     label: 'Offer',        sample: [] },
+          { id: 'rejected',  label: 'Rejected',     sample: [] },
+          { id: 'archived',  label: 'Archived',     sample: [] },
+        ];
+        const board = document.getElementById('trackerBoard');
+        board.innerHTML = stages.map(s => `
+          <div class="tracker__col">
+            <h3>${s.label}<span class="tracker__count">${s.sample.length}</span></h3>
+            ${s.sample.length === 0
+              ? '<div class="tracker__empty">Empty</div>'
+              : s.sample.map(t => `<div class="job"><div><div class="job__title">${t}</div><div class="job__meta">Sample · Move with drag</div></div></div>`).join('')}
+          </div>
+        `).join('');
+      }
+
+      // Initial load
+      loadJobs();
+    </script>
+    </body>
+    </html>
+kind: ConfigMap
+metadata:
+  name: hs-preview-html
+  namespace: hiredsignal
