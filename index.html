@@ -4,799 +4,824 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HiredSignal — Mobile Preview</title>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js" integrity="sha384-bvuRWyKzPx5K1Q0KJzN9PEqxiSXmIVwJEnzYqHhDw3xkDeQrNHnsZL2BV4yDvb+u" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  /* HiredSignal Design Tokens — sourced from michaeltabet/hiredsignal-ui v0.3.0
-     Brand Guidelines v1.0 (2026-04-15) */
   :root {
-    /* Core palette */
-    --hs-signal-blue: #2563eb;
-    --hs-ink:         #0f172a;
-    --hs-slate:       #475569;
-    --hs-paper:       #f8fafc;
+    --ink: #0a0a0f;
+    --ink-2: #1a1a24;
+    --paper: #fafaf7;
+    --paper-2: #f3f3ee;
+    --line: #e8e6df;
+    --line-2: #d4d2c9;
+    --mute: #6b6a63;
+    --mute-2: #9a9890;
 
-    /* Slate scale */
-    --hs-slate-100: #f1f5f9;
-    --hs-slate-200: #e2e8f0;
-    --hs-slate-300: #cbd5e1;
-    --hs-slate-400: #94a3b8;
-    --hs-slate-500: #64748b;
-    --hs-slate-600: #475569;
+    --signal-fresh: #10b981;
+    --signal-fresh-bg: #ecfdf5;
+    --signal-verified: #2563eb;
+    --signal-verified-bg: #eff6ff;
+    --signal-aging: #d97706;
+    --signal-aging-bg: #fffbeb;
+    --signal-expired: #dc2626;
+    --signal-expired-bg: #fef2f2;
 
-    /* Signal states — text-safe shades (verified AA/AAA on Paper per brand guide) */
-    --hs-signal-fresh:    #047857;  /* 6.3:1 AA  */
-    --hs-signal-verified: #1d4ed8;  /* 8.6:1 AAA */
-    --hs-signal-aging:    #b45309;  /* 5.9:1 AA  */
-    --hs-signal-expired:  #b91c1c;  /* 7.0:1 AAA */
+    --accent: #ff5a1f;
 
-    /* Semantic surfaces */
-    --hs-bg-base:        #ffffff;
-    --hs-bg-container:   #f8fafc;
-    --hs-bg-elevated:    #ffffff;
-    --hs-text-primary:   var(--hs-ink);
-    --hs-text-secondary: var(--hs-slate);
-    --hs-text-tertiary:  var(--hs-slate-400);
-    --hs-border:         #e2e8f0;
-    --hs-border-strong:  var(--hs-slate-300);
+    --display: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Monaco, monospace;
 
-    /* Legacy aliases retained for component CSS (point at real tokens) */
-    --hs-mute: var(--hs-text-secondary);
-    --hs-line: var(--hs-border);
-    --hs-card: var(--hs-bg-base);
-
-    /* Type scale */
-    --hs-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    --hs-font-family-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Monaco, Consolas, monospace;
-    --hs-fs-h1:      1.875rem;
-    --hs-fs-h2:      1.5rem;
-    --hs-fs-h3:      1.25rem;
-    --hs-fs-h4:      1.125rem;
-    --hs-fs-body-lg: 1rem;
-    --hs-fs-body:    0.875rem;
-    --hs-fs-caption: 0.6875rem;
-    --hs-lh-body: 1.6;
-    --hs-fw-medium: 500;
-    --hs-fw-semibold: 600;
-    --hs-fw-bold: 700;
-
-    /* Spacing (4px grid) */
-    --hs-space-xs: 8px;
-    --hs-space-sm: 12px;
-    --hs-space-md: 16px;
-    --hs-space-lg: 24px;
-    --hs-space-xl: 32px;
-    --space-1: 4px; --space-2: 8px; --space-3: 12px;
-    --space-4: 16px; --space-5: 24px; --space-6: 32px; --space-7: 48px;
-
-    /* Radius + shadow */
-    --hs-radius-sm: 4px;
-    --hs-radius-md: 6px;
-    --hs-radius-lg: 8px;
-    --hs-radius-xl: 12px;
-    --radius: var(--hs-radius-xl);
-    --hs-shadow-sm: 0 1px 2px rgba(15,23,42,.04), 0 2px 4px rgba(15,23,42,.08);
-    --hs-shadow-md: 0 2px 4px rgba(15,23,42,.06), 0 4px 8px rgba(15,23,42,.10);
-    --hs-shadow-lg: 0 4px 8px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.12);
-    --shadow-sm: var(--hs-shadow-sm);
-    --shadow-md: var(--hs-shadow-md);
-
-    /* Motion */
-    --hs-duration-fast: 120ms;
-    --hs-duration-normal: 200ms;
-    --hs-easing-default: cubic-bezier(.4,0,.2,1);
-
-    /* Touch target */
-    --hs-touch-ios: 44px;
-    --hs-touch-android: 48px;
+    --shadow-device: 0 30px 80px -20px rgba(10,10,15,0.35), 0 10px 30px -10px rgba(10,10,15,0.18);
   }
+
   [data-theme="dark"] {
-    --hs-bg-base:        #0f172a;
-    --hs-bg-container:   #020617;
-    --hs-bg-elevated:    #1e293b;
-    --hs-text-primary:   #f1f5f9;
-    --hs-text-secondary: #94a3b8;
-    --hs-text-tertiary:  #475569;
-    --hs-border:         #1e293b;
-    --hs-border-strong:  #334155;
-    --hs-paper: var(--hs-bg-container);
-    --hs-ink: var(--hs-text-primary);
-    --hs-mute: var(--hs-text-secondary);
-    --hs-line: var(--hs-border);
-    --hs-card: var(--hs-bg-elevated);
-    --hs-shadow-sm: 0 1px 2px rgba(0,0,0,.35);
-    --hs-shadow-md: 0 4px 12px rgba(0,0,0,.45);
-    --shadow-sm: var(--hs-shadow-sm);
-    --shadow-md: var(--hs-shadow-md);
+    --ink: #fafaf7;
+    --ink-2: #d4d2c9;
+    --paper: #0a0a0f;
+    --paper-2: #1a1a24;
+    --line: #1f1f2a;
+    --line-2: #2a2a37;
+    --mute: #8a8880;
+    --mute-2: #5a5852;
+    --signal-fresh-bg: #052e1c;
+    --signal-verified-bg: #0a1a3e;
+    --signal-aging-bg: #2a1a05;
+    --signal-expired-bg: #2a0a0a;
+    --shadow-device: 0 30px 80px -20px rgba(0,0,0,0.7), 0 10px 30px -10px rgba(0,0,0,0.5);
   }
+
   *, *::before, *::after { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
-    font-family: var(--hs-font-family);
-    font-size: var(--hs-fs-body);
-    line-height: var(--hs-lh-body);
-    background: var(--hs-bg-container);
-    color: var(--hs-text-primary);
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--paper);
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  button { font: inherit; color: inherit; cursor: pointer; }
-  a { color: var(--hs-signal-blue); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  :focus-visible {
-    outline: 2px solid var(--hs-signal-blue);
-    outline-offset: 2px;
-    box-shadow: none;
-    border-radius: inherit;
-  }
-  [data-theme="dark"] :focus-visible { outline-color: #93c5fd; }
-  .tabular-nums { font-variant-numeric: tabular-nums; }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0ms !important;
-      scroll-behavior: auto !important;
-    }
+    text-rendering: optimizeLegibility;
   }
 
-  /* Device frame harness — lets you preview at phone / tablet / desktop sizes */
-  .harness {
-    min-height: 100vh;
+  .stage {
     display: grid;
-    grid-template-columns: 240px 1fr;
+    grid-template-columns: 320px 1fr;
+    min-height: 100vh;
   }
-  .harness__sidebar {
-    background: var(--hs-card);
-    border-right: 1px solid var(--hs-line);
-    padding: var(--space-5);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+
+  .rail {
+    background: var(--paper);
+    border-right: 1px solid var(--line);
+    padding: 32px 28px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
   }
-  .harness__brand {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 36px;
+  }
+  .brand-mark {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--ink);
+    display: grid; place-items: center;
+  }
+  .brand-mark::before {
+    content: ''; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--signal-fresh);
+    box-shadow: 0 0 12px var(--signal-fresh);
+  }
+  .brand-name {
+    font-family: var(--display);
     font-weight: 700;
-    font-size: 15px;
-    margin-bottom: var(--space-4);
+    font-size: 22px;
+    letter-spacing: -0.02em;
   }
-  .harness__dot { width: 14px; height: 14px; border-radius: 50%; background: var(--hs-signal-blue); }
-  .harness__label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--hs-mute); margin-top: var(--space-4); }
-  .harness__btn {
-    background: transparent;
-    border: 1px solid var(--hs-line);
-    border-radius: 8px;
-    padding: 10px 12px;
-    text-align: left;
+  .brand-tag {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--mute);
+    margin-top: 2px;
+  }
+
+  .rail-section { margin-bottom: 28px; }
+  .rail-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--mute);
+    margin-bottom: 12px;
+  }
+  .rail-meta {
     font-size: 13px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    line-height: 1.55;
+    color: var(--ink-2);
   }
-  .harness__btn:hover { background: var(--hs-paper); }
-  .harness__btn--active { border-color: var(--hs-signal-blue); background: rgba(37, 99, 235, .08); color: var(--hs-signal-blue); font-weight: 600; }
-  .harness__stage {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: var(--space-6) var(--space-4);
-    overflow: auto;
+  .rail-meta strong { color: var(--ink); font-weight: 600; }
+
+  .toggles {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .toggle {
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 120ms;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .toggle:hover { border-color: var(--line-2); background: var(--paper-2); }
+  .toggle.active {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .toggle .kbd {
+    font-family: var(--mono);
+    font-size: 10px;
+    opacity: 0.6;
+  }
+
+  .signal-legend { display: flex; flex-direction: column; gap: 8px; }
+  .signal-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .signal-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .signal-dot.fresh { background: var(--signal-fresh); box-shadow: 0 0 8px var(--signal-fresh); }
+  .signal-dot.verified { background: var(--signal-verified); }
+  .signal-dot.aging { background: var(--signal-aging); }
+  .signal-dot.expired { background: var(--signal-expired); opacity: 0.6; }
+  .signal-item .meta { color: var(--mute); margin-left: auto; font-family: var(--mono); font-size: 10px; }
+
+  .canvas {
+    padding: 64px 40px 80px;
     background:
-      radial-gradient(1200px 600px at 50% -100px, rgba(37, 99, 235, .08), transparent),
-      var(--hs-paper);
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,90,31,0.06), transparent 60%),
+      var(--paper);
+    min-height: 100vh;
   }
-  .device {
-    background: var(--hs-card);
-    border: 1px solid var(--hs-line);
-    border-radius: 28px;
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
-    transition: width .25s ease, height .25s ease;
+  [data-theme="dark"] .canvas {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,90,31,0.08), transparent 60%),
+      var(--paper);
+  }
+
+  .canvas-head {
+    max-width: 980px;
+    margin: 0 auto 48px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .canvas-title {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px;
+  }
+  .canvas-title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .canvas-sub {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--mute);
+    max-width: 620px;
+    margin: 0;
+  }
+
+  .devices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    max-width: 980px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  .device-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 18px;
+  }
+  .device-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--mute);
+  }
+  .device-label strong { color: var(--ink); font-weight: 600; }
+
+  .iphone {
+    width: 360px;
+    height: 740px;
+    background: #0a0a0f;
+    border-radius: 52px;
+    padding: 12px;
+    box-shadow: var(--shadow-device),
+      0 0 0 2px #2a2a37,
+      0 0 0 8px #0a0a0f;
     position: relative;
   }
-  .device--iphone   { width: 390px; height: 844px; }   /* iPhone 15 Pro */
-  .device--ipad     { width: 1024px; height: 768px; }  /* iPad landscape */
-  .device--android  { width: 412px; height: 915px; }   /* Pixel 7 */
-  .device--tablet   { width: 1200px; height: 800px; }  /* Android tablet landscape */
-  .device--desktop  { width: 100%; height: calc(100vh - 96px); border-radius: 16px; }
-
-  .device__notch {
-    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
-    width: 120px; height: 26px; background: #000; border-radius: 14px; z-index: 50;
-    opacity: .85;
-  }
-  .device--ipad .device__notch,
-  .device--tablet .device__notch,
-  .device--desktop .device__notch { display: none; }
-
-  /* App chrome */
-  .app {
-    height: 100%;
-    width: 100%;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    background: var(--hs-paper);
+  .iphone-screen {
+    width: 100%; height: 100%;
+    background: var(--paper);
+    border-radius: 40px;
     overflow: hidden;
+    position: relative;
   }
-  .app__topbar {
-    padding: var(--space-3) var(--space-4);
-    padding-top: max(var(--space-4), env(safe-area-inset-top));
-    background: var(--hs-card);
-    border-bottom: 1px solid var(--hs-line);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-  }
-  .app__title { font-weight: 700; font-size: 17px; display: flex; align-items: center; gap: var(--space-2); }
-  .app__title .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--hs-signal-blue); display: inline-block; }
-  .app__avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--hs-signal-blue), #7c3aed);
-    color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700;
+  .iphone-notch {
+    position: absolute;
+    top: 8px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 30px;
+    background: #0a0a0f;
+    border-radius: 20px;
+    z-index: 50;
   }
 
-  .app__content { overflow: auto; }
-  .app__tabbar {
-    border-top: 1px solid var(--hs-line);
-    background: var(--hs-card);
+  .pixel {
+    width: 360px;
+    height: 740px;
+    background: #14141a;
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow: var(--shadow-device),
+      0 0 0 2px #2a2a37;
+    position: relative;
+  }
+  .pixel-screen {
+    width: 100%; height: 100%;
+    background: var(--paper);
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+  }
+  .pixel-hole {
+    position: absolute;
+    top: 18px; left: 50%; transform: translateX(-50%);
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #0a0a0f;
+    z-index: 50;
+  }
+
+  .status-bar {
+    height: 44px;
+    padding: 0 24px 4px 32px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    position: relative;
+    z-index: 10;
+  }
+  .status-bar .time { font-variant-numeric: tabular-nums; }
+  .status-bar .right {
+    display: flex; align-items: center; gap: 5px;
+  }
+  .status-icon { width: 14px; height: 14px; opacity: 0.9; }
+  .pixel .status-bar { padding-left: 24px; padding-right: 18px; padding-bottom: 8px; }
+
+  .app {
+    height: calc(100% - 44px);
+    display: flex; flex-direction: column;
+    background: var(--paper);
+    position: relative;
+  }
+  .app-head {
+    padding: 12px 20px 16px;
+    background: var(--paper);
+  }
+  .app-title-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .app-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin: 0;
+  }
+  .app-title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .app-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--mute);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .search-row {
+    display: flex; gap: 8px;
+  }
+  .search-input {
+    flex: 1;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    padding: 0 14px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .search-input::placeholder { color: var(--mute-2); }
+  .search-btn {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    border: none;
+    background: var(--ink);
+    color: var(--paper);
+    display: grid; place-items: center;
+    cursor: pointer;
+  }
+
+  .chips {
+    display: flex; gap: 6px;
+    padding: 12px 20px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink-2);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 5px;
+    cursor: pointer;
+  }
+  .chip.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .job-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 16px 80px;
+    scrollbar-width: none;
+  }
+  .job-list::-webkit-scrollbar { display: none; }
+
+  .job-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 16px 16px 22px;
+    margin-bottom: 10px;
+    position: relative;
+    transition: all 150ms;
+    cursor: pointer;
+  }
+  .job-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 16px; bottom: 16px;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+  }
+  .job-card[data-signal="fresh"]::before { background: var(--signal-fresh); box-shadow: 0 0 16px -2px var(--signal-fresh); }
+  .job-card[data-signal="verified"]::before { background: var(--signal-verified); }
+  .job-card[data-signal="aging"]::before { background: var(--signal-aging); }
+  .job-card[data-signal="expired"]::before { background: var(--signal-expired); opacity: 0.5; }
+  .job-card[data-signal="expired"] { opacity: 0.6; }
+
+  .job-meta-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .signal-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .signal-pill[data-signal="fresh"] { background: var(--signal-fresh-bg); color: var(--signal-fresh); }
+  .signal-pill[data-signal="verified"] { background: var(--signal-verified-bg); color: var(--signal-verified); }
+  .signal-pill[data-signal="aging"] { background: var(--signal-aging-bg); color: var(--signal-aging); }
+  .signal-pill[data-signal="expired"] { background: var(--signal-expired-bg); color: var(--signal-expired); }
+  .signal-pill .pulse {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor;
+  }
+  .posted-time {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--mute);
+    margin-left: auto;
+  }
+
+  .job-title {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 17px;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    margin: 0 0 4px;
+    color: var(--ink);
+  }
+  .job-company {
+    font-size: 13px;
+    color: var(--ink-2);
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .job-company .dot { color: var(--mute-2); margin: 0 6px; }
+  .job-company .loc { color: var(--mute); font-weight: 400; }
+
+  .job-foot {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px;
+  }
+  .salary {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .salary .unit {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-left: 4px;
+    font-weight: 500;
+  }
+  .salary .none {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--mute);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .job-tags {
+    display: flex; gap: 4px;
+  }
+  .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mute);
+    padding: 3px 7px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .tag.remote { color: var(--signal-fresh); border-color: var(--signal-fresh-bg); background: var(--signal-fresh-bg); }
+
+  .tab-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(250,250,247,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--line);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    padding-bottom: env(safe-area-inset-bottom);
+    padding: 8px 0 22px;
   }
-  .app__tab {
-    background: none;
-    border: none;
-    padding: 10px 4px 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+  [data-theme="dark"] .tab-bar { background: rgba(10,10,15,0.85); }
+  .pixel .tab-bar { padding-bottom: 14px; }
+
+  .tab {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: none; border: none; cursor: pointer;
+    font: inherit;
+    color: var(--mute);
+    padding: 4px;
+  }
+  .tab svg { width: 22px; height: 22px; stroke-width: 1.8; }
+  .tab span {
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .tab.active { color: var(--accent); }
+  .tab.active svg { stroke-width: 2.2; }
+
+  .pixel .app-head { padding-top: 16px; }
+  .pixel .app-title { font-family: var(--sans); font-weight: 700; font-size: 24px; letter-spacing: -0.02em; }
+  .pixel .app-title em { font-style: normal; font-weight: 700; }
+  .pixel .search-input { border-radius: 24px; }
+  .pixel .search-btn { border-radius: 50%; }
+  .pixel .job-card { border-radius: 12px; }
+  .pixel .job-title { font-family: var(--sans); font-weight: 600; font-size: 16px; }
+  .pixel .salary { font-family: var(--sans); font-weight: 700; font-size: 19px; }
+  .pixel .chip { border-radius: 8px; }
+  .pixel .signal-pill { border-radius: 4px; }
+  .pixel .tab-bar { padding-bottom: 12px; }
+
+  .footnote {
+    max-width: 980px;
+    margin: 64px auto 0;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono);
     font-size: 11px;
-    color: var(--hs-mute);
-    border-top: 2px solid transparent;
-  }
-  .app__tab[aria-selected="true"] { color: var(--hs-signal-blue); border-top-color: var(--hs-signal-blue); font-weight: 600; }
-  .app__tab svg { width: 22px; height: 22px; }
-
-  /* Tablet / desktop two-pane layout */
-  .device--ipad .app,
-  .device--tablet .app,
-  .device--desktop .app { grid-template-rows: auto 1fr; }
-  .device--ipad .app__tabbar,
-  .device--tablet .app__tabbar,
-  .device--desktop .app__tabbar { display: none; }
-  .device--ipad .app__content,
-  .device--tablet .app__content,
-  .device--desktop .app__content {
-    display: grid;
-    grid-template-columns: 220px 360px 1fr;
-    overflow: hidden;
-  }
-  .pane-sidebar {
-    display: none;
-    border-right: 1px solid var(--hs-line);
-    background: var(--hs-card);
-    padding: var(--space-4);
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-  .device--ipad .pane-sidebar,
-  .device--tablet .pane-sidebar,
-  .device--desktop .pane-sidebar { display: flex; }
-  .pane-sidebar__item {
-    background: none; border: none; text-align: left;
-    padding: 10px 12px; border-radius: 8px; font-size: 14px; color: var(--hs-ink);
-    display: flex; align-items: center; gap: var(--space-3);
-  }
-  .pane-sidebar__item[aria-selected="true"] { background: rgba(37, 99, 235, .1); color: var(--hs-signal-blue); font-weight: 600; }
-  .pane-sidebar__item:hover { background: var(--hs-paper); }
-  .pane-list, .pane-detail { overflow: auto; }
-  .pane-list { border-right: 1px solid var(--hs-line); background: var(--hs-card); }
-  .pane-detail { padding: var(--space-5); background: var(--hs-paper); }
-
-  /* Tab views */
-  .view { display: none; height: 100%; }
-  .view[data-active="true"] { display: block; }
-
-  /* Jobs tab */
-  .jobs__search {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: var(--space-2);
-    padding: var(--space-3) var(--space-4);
-    border-bottom: 1px solid var(--hs-line);
-    background: var(--hs-card);
-    position: sticky; top: 0; z-index: 10;
-  }
-  .jobs__field {
-    border: 1px solid var(--hs-line);
-    border-radius: 10px;
-    padding: 10px 12px;
-    background: var(--hs-paper);
-    font-size: 14px;
-    color: var(--hs-ink);
-  }
-  .jobs__field:focus { outline: 2px solid var(--hs-signal-blue); outline-offset: 1px; border-color: var(--hs-signal-blue); }
-  .jobs__submit {
-    background: var(--hs-signal-blue); color: #fff; border: none;
-    padding: 0 16px; border-radius: 10px; font-weight: 600; font-size: 14px;
-  }
-  .jobs__list { padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
-  .job {
-    background: var(--hs-card);
-    border: 1px solid var(--hs-line);
-    border-radius: var(--radius);
-    padding: var(--space-3) var(--space-4);
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: var(--space-2);
-    cursor: pointer;
-    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-  }
-  .job:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); border-color: var(--hs-signal-blue); }
-  .job[aria-selected="true"] { border-color: var(--hs-signal-blue); box-shadow: 0 0 0 2px rgba(37, 99, 235, .15); }
-  .job__title { font-weight: 600; font-size: 15px; line-height: 1.3; }
-  .job__meta { font-size: 13px; color: var(--hs-mute); margin-top: 2px; }
-  .job__company { color: var(--hs-ink); font-weight: 500; }
-  .signal {
-    font-size: 11px;
-    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: .04em;
-    padding: 4px 8px;
-    border-radius: 999px;
-    align-self: start;
-    white-space: nowrap;
-  }
-  /* Signal state badges — use text-safe colours from brand v1.0 (§10) — pass AA/AAA on Paper */
-  .signal--fresh    { background: #d1fae5; color: var(--hs-signal-fresh); }
-  .signal--verified { background: #dbeafe; color: var(--hs-signal-verified); }
-  .signal--aging    { background: #fef3c7; color: var(--hs-signal-aging); }
-  .signal--expired  { background: #fee2e2; color: var(--hs-signal-expired); }
-  [data-theme="dark"] .signal--fresh    { background: rgba(4,120,87,.18);  color: #10b981; }
-  [data-theme="dark"] .signal--verified { background: rgba(29,78,216,.22); color: #93c5fd; }
-  [data-theme="dark"] .signal--aging    { background: rgba(180,83,9,.22);  color: #fbbf24; }
-  [data-theme="dark"] .signal--expired  { background: rgba(185,28,28,.22); color: #fca5a5; }
-
-  /* Job detail */
-  .detail__sticky {
-    position: sticky; top: 0; background: var(--hs-paper); z-index: 5; padding-bottom: var(--space-3);
-    border-bottom: 1px solid var(--hs-line); margin-bottom: var(--space-4);
-  }
-  .detail__back { background: none; border: none; color: var(--hs-signal-blue); font-weight: 600; font-size: 14px; padding: 0; margin-bottom: var(--space-3); display: inline-flex; align-items: center; gap: 4px; }
-  .detail__title { font-size: 22px; line-height: 1.2; margin: 0 0 var(--space-2); font-weight: 700; }
-  .detail__company { font-size: 15px; color: var(--hs-mute); margin: 0 0 var(--space-3); }
-  .detail__row { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); font-size: 13px; color: var(--hs-mute); margin-bottom: var(--space-3); }
-  .detail__row strong { color: var(--hs-ink); font-weight: 600; }
-  .detail__apply {
-    display: inline-flex; gap: var(--space-2); align-items: center;
-    background: var(--hs-signal-blue); color: #fff; border: none;
-    padding: 12px 20px; border-radius: 12px;
-    font-weight: 600; font-size: 15px;
-    text-decoration: none;
-  }
-  .detail__apply:hover { text-decoration: none; opacity: .9; }
-  .detail__body { font-size: 14px; line-height: 1.6; }
-  .detail__body p { margin: 0 0 var(--space-3); }
-  .detail__placeholder {
-    padding: var(--space-7); text-align: center; color: var(--hs-mute);
+    letter-spacing: 0.12em;
+    color: var(--mute);
   }
 
-  /* Loading + error states */
-  .state {
-    padding: var(--space-5);
-    text-align: center;
-    color: var(--hs-mute);
-    font-size: 14px;
-  }
-  .state--error { color: var(--signal-expired); }
-  .skeleton {
-    height: 64px; background: linear-gradient(90deg, var(--hs-line) 0%, var(--hs-paper) 50%, var(--hs-line) 100%);
-    background-size: 200% 100%; animation: shimmer 1.4s linear infinite;
-    border-radius: var(--radius); margin: var(--space-2);
-  }
-  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-  /* Chat tab */
-  .chat { display: flex; flex-direction: column; height: 100%; }
-  .chat__header { padding: var(--space-4); border-bottom: 1px solid var(--hs-line); background: var(--hs-card); }
-  .chat__title { font-size: 20px; font-weight: 700; margin: 0 0 var(--space-2); }
-  .chat__models { display: flex; gap: var(--space-2); flex-wrap: wrap; }
-  .chat__model {
-    background: var(--hs-paper); border: 1px solid var(--hs-line);
-    border-radius: 999px; padding: 6px 12px; font-size: 12px;
-  }
-  .chat__model[aria-pressed="true"] { background: rgba(37, 99, 235, .1); color: var(--hs-signal-blue); border-color: var(--hs-signal-blue); }
-  .chat__body { flex: 1; padding: var(--space-5); overflow: auto; }
-  .chat__suggestions { display: grid; gap: var(--space-2); grid-template-columns: 1fr; }
-  .chat__suggestion {
-    text-align: left; background: var(--hs-card); border: 1px solid var(--hs-line);
-    border-radius: var(--radius); padding: var(--space-3) var(--space-4); font-size: 14px;
-  }
-  .chat__suggestion:hover { border-color: var(--hs-signal-blue); }
-  .chat__composer { padding: var(--space-3) var(--space-4); border-top: 1px solid var(--hs-line); background: var(--hs-card); display: flex; gap: var(--space-2); }
-  .chat__input { flex: 1; padding: 12px 14px; border: 1px solid var(--hs-line); border-radius: 12px; background: var(--hs-paper); font: inherit; color: var(--hs-ink); }
-  .chat__send { background: var(--hs-signal-blue); color: #fff; border: none; padding: 0 16px; border-radius: 12px; font-weight: 600; }
-  .chat__placeholder-note { font-size: 12px; color: var(--hs-mute); margin-top: var(--space-2); }
-
-  /* Tracker tab */
-  .tracker { padding: var(--space-4); height: 100%; overflow: auto; }
-  .tracker__gate { text-align: center; padding: var(--space-7) var(--space-4); }
-  .tracker__gate h2 { font-size: 22px; margin: 0 0 var(--space-3); }
-  .tracker__gate p { color: var(--hs-mute); margin: 0 0 var(--space-4); }
-  .tracker__signin {
-    background: var(--hs-signal-blue); color: #fff; border: none;
-    padding: 12px 20px; border-radius: 12px; font-weight: 600;
-  }
-  .tracker__columns {
-    display: grid; gap: var(--space-3); grid-auto-flow: column;
-    grid-auto-columns: 240px; overflow-x: auto;
-    height: calc(100% - 60px);
-  }
-  .tracker__col {
-    background: var(--hs-card); border: 1px solid var(--hs-line); border-radius: var(--radius);
-    padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2);
-    min-height: 200px;
-  }
-  .tracker__col h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--hs-mute); margin: 0 0 var(--space-2); font-weight: 700; display: flex; justify-content: space-between; }
-  .tracker__count { background: var(--hs-paper); padding: 2px 8px; border-radius: 999px; font-size: 11px; color: var(--hs-ink); }
-  .tracker__empty { font-size: 13px; color: var(--hs-mute); padding: var(--space-3); text-align: center; border: 1px dashed var(--hs-line); border-radius: 8px; }
-  .tracker__toolbar { display: flex; justify-content: space-between; margin-bottom: var(--space-3); align-items: center; }
-  .tracker__toolbar h2 { margin: 0; font-size: 20px; }
-
-  /* Responsive — narrow phone preview shrinks search to 1 col */
-  @media (max-width: 480px) {
-    .harness { grid-template-columns: 1fr; }
-    .harness__sidebar { display: none; }
-    .device { width: 100% !important; height: 100vh !important; border-radius: 0; border: none; }
-    .device__notch { display: none; }
+  @media (max-width: 1100px) {
+    .devices { grid-template-columns: 1fr; gap: 56px; }
   }
 </style>
 </head>
 <body>
-<div class="harness">
-  <aside class="harness__sidebar" aria-label="Preview controls">
-    <div class="harness__brand"><span class="harness__dot"></span> HiredSignal Preview</div>
-    <div class="harness__label">Device</div>
-    <button class="harness__btn harness__btn--active" data-device="iphone">iPhone 15 Pro <span>390×844</span></button>
-    <button class="harness__btn" data-device="android">Pixel 7 <span>412×915</span></button>
-    <button class="harness__btn" data-device="ipad">iPad landscape <span>1024×768</span></button>
-    <button class="harness__btn" data-device="tablet">Android tablet <span>1200×800</span></button>
-    <button class="harness__btn" data-device="desktop">Desktop (max)</button>
-    <div class="harness__label">Theme</div>
-    <button class="harness__btn" data-theme-toggle>Toggle dark mode</button>
-    <div class="harness__label">Notes</div>
-    <div style="font-size: 12px; color: var(--hs-mute); line-height: 1.5;">
-      Live preview against <strong>https://hiredsignal.com/api/jobs/search</strong>.
-      Real jobs. Real API. Click cards to see detail.
+
+<div class="stage">
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="brand-name">HiredSignal</div>
+        <span class="brand-tag">Mobile preview</span>
+      </div>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Theme</div>
+      <div class="toggles">
+        <button class="toggle active" data-theme-btn="light">Light <span class="kbd">L</span></button>
+        <button class="toggle" data-theme-btn="dark">Dark <span class="kbd">D</span></button>
+      </div>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Signal states</div>
+      <div class="signal-legend">
+        <div class="signal-item"><span class="signal-dot fresh"></span> Fresh <span class="meta">&lt; 24h</span></div>
+        <div class="signal-item"><span class="signal-dot verified"></span> Verified <span class="meta">ATS-live</span></div>
+        <div class="signal-item"><span class="signal-dot aging"></span> Aging <span class="meta">7+ days</span></div>
+        <div class="signal-item"><span class="signal-dot expired"></span> Expired <span class="meta">closed</span></div>
+      </div>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Build status</div>
+      <div class="rail-meta">
+        <strong>iOS</strong> · SwiftUI Universal, 72 files, clean architecture, AppAuth OIDC, fastlane + GH Actions. Needs Xcode 26.4+.<br><br>
+        <strong>Android</strong> · Compose Universal, multi-module (core-* + feature-*), Kotlin 2.3.21, BOM 2026.05.00. Needs Android SDK.
+      </div>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Notes</div>
+      <div class="rail-meta">
+        Side-by-side render of iPhone + Pixel surfaces. Real device chrome, real type system, real signal language. Seed data — the live API is auth-gated and returns <span style="font-family:var(--mono)">[]</span> without OIDC.
+      </div>
     </div>
   </aside>
 
-  <main class="harness__stage">
-    <div class="device device--iphone" id="device">
-      <div class="device__notch" aria-hidden="true"></div>
-      <div class="app">
-        <header class="app__topbar">
-          <div class="app__title"><span class="dot"></span><span id="tabTitle">Jobs</span></div>
-          <div class="app__avatar" aria-label="Profile">M</div>
-        </header>
+  <main class="canvas">
+    <div class="canvas-head">
+      <div class="eyebrow">Native mobile — concept review</div>
+      <h1 class="canvas-title">Signal over <em>noise</em>, on a phone.</h1>
+      <p class="canvas-sub">Two native apps. One product language. Each card is anchored by its freshness signal — fresh, verified, aging, expired — so the most actionable jobs read first, every time.</p>
+    </div>
 
-        <div class="app__content">
-          <nav class="pane-sidebar" aria-label="Sections">
-            <button class="pane-sidebar__item" aria-selected="true" data-tab="jobs">Jobs</button>
-            <button class="pane-sidebar__item" data-tab="chat">Chat</button>
-            <button class="pane-sidebar__item" data-tab="tracker">Tracker</button>
-            <button class="pane-sidebar__item" data-tab="profile">Profile</button>
-          </nav>
+    <div class="devices">
 
-          <!-- Jobs tab -->
-          <section class="view" data-tab="jobs" data-active="true" style="display: contents;">
-            <div class="pane-list" id="jobsListPane">
-              <form class="jobs__search" id="jobsForm" autocomplete="off">
-                <input class="jobs__field" id="qField" type="search" placeholder="Job title, keyword, or company" aria-label="Search">
-                <input class="jobs__field" id="locField" type="search" placeholder="Location" aria-label="Location">
-                <button class="jobs__submit" type="submit" aria-label="Search">Search</button>
-              </form>
-              <div class="jobs__list" id="jobsList" role="list">
-                <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-              </div>
+      <div class="device-wrap">
+        <div class="device-label"><strong>iOS</strong> · iPhone 15 Pro · 390×844</div>
+        <div class="iphone">
+          <div class="iphone-screen">
+            <div class="iphone-notch"></div>
+
+            <div class="status-bar">
+              <span class="time">9:41</span>
+              <span class="right">
+                <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <svg class="status-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M2 17h2v3H2zm4-3h2v6H6zm4-3h2v9h-2zm4-3h2v12h-2zm4-3h2v15h-2z"/></svg>
+                <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><rect x="4" y="9" width="14" height="6" fill="currentColor"/><path d="M21 10v4" stroke-linecap="round"/></svg>
+              </span>
             </div>
-            <div class="pane-detail" id="jobDetail">
-              <div class="detail__placeholder">Select a job to see details</div>
-            </div>
-          </section>
 
-          <!-- Chat tab -->
-          <section class="view" data-tab="chat" style="display: none;">
-            <div class="chat" style="grid-column: 1 / -1;">
-              <header class="chat__header">
-                <h2 class="chat__title">How can I help with your job hunt?</h2>
-                <div class="chat__models" role="radiogroup" aria-label="Model">
-                  <button class="chat__model" aria-pressed="true">GPT-OSS 120B</button>
-                  <button class="chat__model" aria-pressed="false">GPT-OSS 20B</button>
-                  <button class="chat__model" aria-pressed="false">Llama 3.3 70B</button>
-                  <button class="chat__model" aria-pressed="false">Llama 3.1 8B</button>
+            <div class="app">
+              <header class="app-head">
+                <div class="app-title-row">
+                  <h2 class="app-title">Your <em>signal</em></h2>
+                  <span class="app-meta">128 fresh</span>
+                </div>
+                <div class="search-row">
+                  <input class="search-input" placeholder="Senior product engineer · London" />
+                  <button class="search-btn" aria-label="Search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                  </button>
                 </div>
               </header>
-              <div class="chat__body">
-                <div class="chat__suggestions">
-                  <button class="chat__suggestion">Tailor my CV for a specific role</button>
-                  <button class="chat__suggestion">Draft a cover letter that doesn't sound generic</button>
-                  <button class="chat__suggestion">Prep for behavioural interviews using the STAR method</button>
-                  <button class="chat__suggestion">Evaluate a job offer beyond just salary</button>
-                </div>
-                <p class="chat__placeholder-note">Chat send is stubbed in this preview — the chat API will land in v1.1. UI shell matches the production app.</p>
-              </div>
-              <form class="chat__composer" onsubmit="event.preventDefault();">
-                <input class="chat__input" placeholder="Ask anything about your job hunt..." aria-label="Message">
-                <button class="chat__send" type="submit">Send</button>
-              </form>
-            </div>
-          </section>
 
-          <!-- Tracker tab -->
-          <section class="view" data-tab="tracker" style="display: none;">
-            <div class="tracker" style="grid-column: 1 / -1;">
-              <div class="tracker__toolbar">
-                <h2>Application tracker</h2>
-                <button class="tracker__signin" id="signinBtn">Sign in</button>
+              <div class="chips">
+                <button class="chip active">All</button>
+                <button class="chip"><span class="chip-dot" style="background:var(--signal-fresh)"></span>Fresh</button>
+                <button class="chip"><span class="chip-dot" style="background:var(--signal-verified)"></span>Verified</button>
+                <button class="chip">Remote</button>
+                <button class="chip">London</button>
+                <button class="chip">£100k+</button>
               </div>
-              <div class="tracker__gate" id="trackerGate">
-                <h2>Sign in to track your applications</h2>
-                <p>Authenticated via Keycloak OIDC PKCE. Sign in with Google, Apple, or email — same account as the web site.</p>
-              </div>
-              <div class="tracker__columns" id="trackerBoard" style="display: none;">
-                <!-- Filled by JS when signed in -->
-              </div>
-            </div>
-          </section>
 
-          <!-- Profile tab -->
-          <section class="view" data-tab="profile" style="display: none;">
-            <div style="grid-column: 1 / -1; padding: var(--space-5);">
-              <h2 style="margin: 0 0 var(--space-3);">Profile</h2>
-              <p style="color: var(--hs-mute); margin: 0 0 var(--space-4);">Sign in to save jobs, sync your tracker across devices, and get freshness alerts.</p>
-              <button class="tracker__signin" onclick="alert('Will open Keycloak OIDC flow on real device via AppAuth (iOS) / Credential Manager (Android).')">Sign in with HiredSignal</button>
+              <div class="job-list" id="ios-list"></div>
+
+              <nav class="tab-bar">
+                <button class="tab active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12l9-9 9 9M5 10v10h14V10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span>Signal</span>
+                </button>
+                <button class="tab">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7" stroke-linecap="round"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>
+                  <span>Search</span>
+                </button>
+                <button class="tab">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 7h14M5 12h14M5 17h14" stroke-linecap="round"/></svg>
+                  <span>Tracker</span>
+                </button>
+                <button class="tab">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+                  <span>You</span>
+                </button>
+              </nav>
             </div>
-          </section>
+          </div>
         </div>
+      </div>
 
-        <nav class="app__tabbar" aria-label="Primary">
-          <button class="app__tab" aria-selected="true" data-tab="jobs">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-            Jobs
-          </button>
-          <button class="app__tab" aria-selected="false" data-tab="chat">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Chat
-          </button>
-          <button class="app__tab" aria-selected="false" data-tab="tracker">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="12" rx="1"/></svg>
-            Tracker
-          </button>
-          <button class="app__tab" aria-selected="false" data-tab="profile">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-            Profile
-          </button>
-        </nav>
+      <div class="device-wrap">
+        <div class="device-label"><strong>Android</strong> · Pixel 8 · 412×915</div>
+        <div class="pixel">
+          <div class="pixel-screen">
+            <div class="pixel-hole"></div>
+
+            <div class="status-bar">
+              <span class="time">9:41</span>
+              <span class="right">
+                <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg class="status-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h2v3H3zm4-2h2v5H7zm4-3h2v8h-2zm4-4h2v12h-2zm4-4h2v16h-2z"/></svg>
+                <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="1"/><rect x="4" y="9" width="14" height="6" fill="currentColor"/></svg>
+              </span>
+            </div>
+
+            <div class="app">
+              <header class="app-head">
+                <div class="app-title-row">
+                  <h2 class="app-title">Your <em>signal</em></h2>
+                  <span class="app-meta">128 fresh</span>
+                </div>
+                <div class="search-row">
+                  <input class="search-input" placeholder="Senior product engineer · London" />
+                  <button class="search-btn" aria-label="Search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                  </button>
+                </div>
+              </header>
+
+              <div class="chips">
+                <button class="chip active">All</button>
+                <button class="chip"><span class="chip-dot" style="background:var(--signal-fresh)"></span>Fresh</button>
+                <button class="chip"><span class="chip-dot" style="background:var(--signal-verified)"></span>Verified</button>
+                <button class="chip">Remote</button>
+                <button class="chip">London</button>
+                <button class="chip">£100k+</button>
+              </div>
+
+              <div class="job-list" id="android-list"></div>
+
+              <nav class="tab-bar">
+                <button class="tab active">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l-9 9h3v8h12v-8h3z"/></svg>
+                  <span>Signal</span>
+                </button>
+                <button class="tab">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>
+                  <span>Search</span>
+                </button>
+                <button class="tab">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7h14M5 12h14M5 17h14" stroke-linecap="round"/></svg>
+                  <span>Tracker</span>
+                </button>
+                <button class="tab">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+                  <span>You</span>
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <footer class="footnote">
+      <span>v1 concept · <span style="color:var(--ink)">native apps</span> · iOS + Android Universal</span>
+      <span>hs-mobile · 2026-05-21</span>
+    </footer>
   </main>
 </div>
 
 <script>
-  const API = 'https://hiredsignal.com';
-  const state = { tab: 'jobs', selectedSlug: null, jobs: [], signedIn: false };
+  const JOBS = [
+    { title: "Staff Product Engineer", company: "Linear", location: "London · Hybrid", remote: false, salary: { min: 145, max: 185, currency: "£" }, signal: "fresh", posted: "3h", tags: ["FT"] },
+    { title: "Senior iOS Engineer", company: "Monzo", location: "Remote · UK", remote: true, salary: { min: 110, max: 145, currency: "£" }, signal: "verified", posted: "11h", tags: ["FT"] },
+    { title: "Founding ML Engineer", company: "Stealth · Series A", location: "London", remote: false, salary: { min: 130, max: 200, currency: "£" }, signal: "fresh", posted: "1h", tags: ["FT", "Equity"] },
+    { title: "Principal Backend Engineer", company: "Anthropic", location: "London · Hybrid", remote: false, salary: { min: 220, max: 320, currency: "£" }, signal: "verified", posted: "2d", tags: ["FT"] },
+    { title: "Senior Android Engineer", company: "Revolut", location: "Remote · EU", remote: true, salary: null, signal: "aging", posted: "9d", tags: ["FT"] },
+    { title: "Lead Platform Engineer", company: "Wise", location: "London", remote: false, salary: { min: 125, max: 160, currency: "£" }, signal: "expired", posted: "21d", tags: ["Closed"] }
+  ];
 
-  // Device switching
-  document.querySelectorAll('[data-device]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-device]').forEach(b => b.classList.remove('harness__btn--active'));
-      btn.classList.add('harness__btn--active');
-      const dev = btn.dataset.device;
-      const device = document.getElementById('device');
-      device.className = 'device device--' + dev;
-    });
-  });
-
-  // Theme
-  document.querySelector('[data-theme-toggle]').addEventListener('click', () => {
-    const cur = document.documentElement.dataset.theme;
-    document.documentElement.dataset.theme = cur === 'light' ? 'dark' : 'light';
-  });
-
-  // Tab switching (both bottom tab bar and sidebar)
-  function setTab(tab) {
-    state.tab = tab;
-    document.querySelectorAll('.app__tab').forEach(t => {
-      t.setAttribute('aria-selected', t.dataset.tab === tab ? 'true' : 'false');
-    });
-    document.querySelectorAll('.pane-sidebar__item').forEach(t => {
-      t.setAttribute('aria-selected', t.dataset.tab === tab ? 'true' : 'false');
-    });
-    document.querySelectorAll('.view').forEach(v => {
-      const match = v.dataset.tab === tab;
-      v.dataset.active = match;
-      v.style.display = match ? (tab === 'jobs' ? 'contents' : 'block') : 'none';
-    });
-    document.getElementById('tabTitle').textContent = tab.charAt(0).toUpperCase() + tab.slice(1);
-  }
-  document.querySelectorAll('[data-tab]').forEach(el => {
-    el.addEventListener('click', () => setTab(el.dataset.tab));
-  });
-
-  // Jobs search
-  const qField = document.getElementById('qField');
-  const locField = document.getElementById('locField');
-  const jobsForm = document.getElementById('jobsForm');
-  const jobsList = document.getElementById('jobsList');
-  const jobDetail = document.getElementById('jobDetail');
-
-  async function loadJobs(q = '', location = '') {
-    jobsList.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
-    const params = new URLSearchParams();
-    if (q) params.set('q', q);
-    if (location) params.set('location', location);
-    params.set('limit', '25');
-    try {
-      const res = await fetch(`${API}/api/jobs/search?${params}`);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
-      state.jobs = data.jobs || [];
-      renderJobs(state.jobs);
-    } catch (err) {
-      jobsList.innerHTML = `<div class="state state--error">Failed to load jobs: ${err.message}</div>`;
-    }
+  function fmtSalary(s) {
+    if (!s) return '<span class="none">Salary undisclosed</span>';
+    return `${s.currency}${s.min}–${s.max}k<span class="unit">/yr</span>`;
   }
 
-  function fmtDate(iso) {
-    try {
-      const d = new Date(iso);
-      const days = Math.floor((Date.now() - d.getTime()) / 86400000);
-      if (days < 1) return 'today';
-      if (days < 7) return days + 'd ago';
-      if (days < 30) return Math.floor(days / 7) + 'w ago';
-      if (days < 365) return Math.floor(days / 30) + 'mo ago';
-      return Math.floor(days / 365) + 'y ago';
-    } catch { return ''; }
-  }
-
-  function renderJobs(jobs) {
-    if (!jobs.length) {
-      jobsList.innerHTML = '<div class="state">No jobs match — try different keywords.</div>';
-      return;
-    }
-    jobsList.innerHTML = '';
-    jobs.forEach(j => {
-      const card = document.createElement('div');
-      card.className = 'job';
-      card.setAttribute('role', 'listitem');
-      card.setAttribute('aria-selected', j.slug === state.selectedSlug ? 'true' : 'false');
-      card.innerHTML = `
-        <div>
-          <div class="job__title">${escapeHTML(j.title)}</div>
-          <div class="job__meta">
-            <span class="job__company">${escapeHTML(j.company)}</span>
-            &middot; ${escapeHTML(j.location || 'Remote')}
-            ${j.remote ? '&middot; Remote' : ''}
-            &middot; ${fmtDate(j.postedAt)}
-          </div>
+  function jobCard(j) {
+    const tags = [
+      j.remote ? '<span class="tag remote">Remote</span>' : '',
+      ...j.tags.map(t => `<span class="tag">${t}</span>`)
+    ].join('');
+    return `
+      <article class="job-card" data-signal="${j.signal}">
+        <div class="job-meta-row">
+          <span class="signal-pill" data-signal="${j.signal}">
+            <span class="pulse"></span>${j.signal}
+          </span>
+          <span class="posted-time">${j.posted} ago</span>
         </div>
-        <span class="signal signal--${j.signal}">${j.signal}</span>
-      `;
-      card.addEventListener('click', () => loadDetail(j.slug));
-      jobsList.appendChild(card);
-    });
-  }
-
-  async function loadDetail(slug) {
-    state.selectedSlug = slug;
-    document.querySelectorAll('.job').forEach(c => c.setAttribute('aria-selected', 'false'));
-    jobDetail.innerHTML = '<div class="state">Loading…</div>';
-    try {
-      // CRITICAL FIX: slugs come back ALREADY percent-encoded from /api/jobs/search.
-      // Re-encoding would double-encode the % → %25, returning 404.
-      // The slug as received is the final path segment — pass it through verbatim.
-      const res = await fetch(`${API}/api/jobs/${slug}`);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const job = await res.json();
-      renderDetail(job);
-    } catch (err) {
-      jobDetail.innerHTML = `<div class="state state--error">Failed to load detail: ${err.message}</div>`;
-    }
-  }
-
-  function renderDetail(j) {
-    const salary = (j.salaryMin || j.salaryMax)
-      ? `<span><strong>Salary:</strong> ${j.salaryMin ?? '?'}–${j.salaryMax ?? '?'} ${j.salaryCurrency ?? ''}</span>`
-      : '';
-    jobDetail.innerHTML = `
-      <div class="detail__sticky">
-        <button class="detail__back" onclick="clearDetail()">← Back to jobs</button>
-        <h1 class="detail__title">${escapeHTML(j.title)}</h1>
-        <p class="detail__company">${escapeHTML(j.company)} &middot; ${escapeHTML(j.location || '')}</p>
-        <div class="detail__row">
-          <span class="signal signal--${j.signal}">${j.signal}</span>
-          <span><strong>Posted:</strong> ${fmtDate(j.postedAt)}</span>
-          ${j.employmentType ? `<span><strong>Type:</strong> ${escapeHTML(j.employmentType)}</span>` : ''}
-          ${j.remote ? '<span><strong>Remote:</strong> Yes</span>' : ''}
-          ${salary}
+        <h3 class="job-title">${j.title}</h3>
+        <div class="job-company">${j.company}<span class="dot">·</span><span class="loc">${j.location}</span></div>
+        <div class="job-foot">
+          <span class="salary">${fmtSalary(j.salary)}</span>
+          <div class="job-tags">${tags}</div>
         </div>
-        ${safeApplyLink(j.applyUrl)}
-      </div>
-      <div class="detail__body">${j.description ? DOMPurify.sanitize(j.description, { USE_PROFILES: { html: true } }) : '<p class="state">No description available.</p>'}</div>
+      </article>
     `;
   }
 
-  function safeApplyLink(url) {
-    if (!url) return '';
-    try {
-      const u = new URL(url);
-      if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
-      return `<a class="detail__apply" href="${escapeHTML(u.href)}" target="_blank" rel="noopener noreferrer">Apply on ${escapeHTML(u.hostname)} →</a>`;
-    } catch {
-      return '';
-    }
+  function render() {
+    const html = JOBS.map(jobCard).join('');
+    document.getElementById('ios-list').innerHTML = html;
+    document.getElementById('android-list').innerHTML = html;
   }
+  render();
 
-  function clearDetail() {
-    state.selectedSlug = null;
-    jobDetail.innerHTML = '<div class="detail__placeholder">Select a job to see details</div>';
-    document.querySelectorAll('.job').forEach(c => c.setAttribute('aria-selected', 'false'));
-  }
-
-  function escapeHTML(s) {
-    return (s ?? '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
-  }
-
-  jobsForm.addEventListener('submit', e => {
-    e.preventDefault();
-    loadJobs(qField.value.trim(), locField.value.trim());
+  document.querySelectorAll('[data-theme-btn]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const theme = btn.dataset.themeBtn;
+      document.documentElement.dataset.theme = theme;
+      document.querySelectorAll('[data-theme-btn]').forEach(b => b.classList.toggle('active', b === btn));
+    });
   });
 
-  // Tracker sign-in stub
-  document.getElementById('signinBtn').addEventListener('click', () => {
-    state.signedIn = !state.signedIn;
-    const gate = document.getElementById('trackerGate');
-    const board = document.getElementById('trackerBoard');
-    const btn = document.getElementById('signinBtn');
-    if (state.signedIn) {
-      btn.textContent = 'Sign out';
-      gate.style.display = 'none';
-      board.style.display = 'grid';
-      renderBoard();
-    } else {
-      btn.textContent = 'Sign in';
-      gate.style.display = 'block';
-      board.style.display = 'none';
-    }
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'd' || e.key === 'D') document.querySelector('[data-theme-btn="dark"]').click();
+    if (e.key === 'l' || e.key === 'L') document.querySelector('[data-theme-btn="light"]').click();
   });
-
-  function renderBoard() {
-    const stages = [
-      { id: 'saved',     label: 'Saved',        sample: ['Senior Engineer @ Stripe', 'Design Lead @ Linear'] },
-      { id: 'applied',   label: 'Applied',      sample: ['Backend Eng @ Cloudflare'] },
-      { id: 'screen',    label: 'Phone screen', sample: ['Platform Eng @ Anthropic'] },
-      { id: 'interview', label: 'Interview',    sample: [] },
-      { id: 'offer',     label: 'Offer',        sample: [] },
-      { id: 'rejected',  label: 'Rejected',     sample: [] },
-      { id: 'archived',  label: 'Archived',     sample: [] },
-    ];
-    const board = document.getElementById('trackerBoard');
-    board.innerHTML = stages.map(s => `
-      <div class="tracker__col">
-        <h3>${s.label}<span class="tracker__count">${s.sample.length}</span></h3>
-        ${s.sample.length === 0
-          ? '<div class="tracker__empty">Empty</div>'
-          : s.sample.map(t => `<div class="job"><div><div class="job__title">${t}</div><div class="job__meta">Sample · Move with drag</div></div></div>`).join('')}
-      </div>
-    `).join('');
-  }
-
-  // Initial load
-  loadJobs();
 </script>
 </body>
 </html>
